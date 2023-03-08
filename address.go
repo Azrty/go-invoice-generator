@@ -6,6 +6,7 @@ type Address struct {
 	Address2   string `json:"address_2,omitempty"`
 	PostalCode string `json:"postal_code,omitempty"`
 	City       string `json:"city,omitempty"`
+	State       string `json:"State,omitempty"`
 	Country    string `json:"country,omitempty"`
 }
 
@@ -18,17 +19,22 @@ func (a *Address) ToString() string {
 		addrString += "\n"
 		addrString += a.Address2
 	}
+	if len(a.City) > 0 {
+		addrString += "\n"
+		addrString += a.PostalCode
+	} else {
+		addrString += "\n"
+	}
+	if len(a.State) > 0 {
+		addrString += ", "
+		addrString += a.State
+	}
 
 	if len(a.PostalCode) > 0 {
 		addrString += "\n"
 		addrString += a.PostalCode
 	} else {
 		addrString += "\n"
-	}
-
-	if len(a.City) > 0 {
-		addrString += " "
-		addrString += a.City
 	}
 
 	if len(a.Country) > 0 {
