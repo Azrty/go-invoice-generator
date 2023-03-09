@@ -331,7 +331,6 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 				} else {
 					taxTotal = taxTotal.Add(taxAmount)
 				}
-				taxTotal = taxTotal.Add(taxAmount.Mul(i._quantity))
 				// get percent from amount
 				println("taxTotalAmount", taxTotalAmount.String())
 			}
