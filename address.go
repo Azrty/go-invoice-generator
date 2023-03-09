@@ -33,6 +33,7 @@ func (a *Address) ToString() string {
 	if len(a.PostalCode) > 0 {
 		addrString += " "
 		addrString += a.PostalCode
+	}
 
 	if len(a.Country) > 0 {
 		addrString += "\n"
