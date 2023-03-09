@@ -329,7 +329,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		// lastY := doc.pdf.GetY()
 		doc.pdf.CellFormat(
 			ItemColDiscountOffset-ItemColTaxOffset,
-			colHeight/2,
+			colHeight,
 			doc.encodeString(taxTitle),
 			"0",
 			0,
