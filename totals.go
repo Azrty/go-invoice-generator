@@ -63,7 +63,7 @@ func (doc *Document) Tax() decimal.Decimal {
 		for _, item := range doc.Items {
 			if item.Taxes != nil {
 				for _, tax := range item.Taxes {
-					taxType, taxAmount, taxAmountForEach := tax.getTax()
+					taxType, taxAmount, taxAmountForEach, _ := tax.getTax()
 					if taxType == TaxTypeAmount {
 						// If tax type is amount, just add amount to tax
 						if taxAmountForEach {
