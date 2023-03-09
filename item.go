@@ -104,10 +104,10 @@ func (i *Item) TaxWithTotalDiscounted() decimal.Decimal {
 		taxType, taxAmount := v.getTax()
 
 		if taxType == TaxTypeAmount {
-			result = taxAmount
+			result = result.Add(taxAmount)
 		} else {
 			divider := decimal.NewFromFloat(100)
-			result.Add(totalHT.Mul(taxAmount.Div(divider)))
+			result = result.Add(totalHT.Mul(taxAmount.Div(divider)))
 		}
 	}
 
