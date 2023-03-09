@@ -21,7 +21,7 @@ func (a *Address) ToString() string {
 	}
 	if len(a.City) > 0 {
 		addrString += "\n"
-		addrString += a.PostalCode
+		addrString += a.City
 	} else {
 		addrString += "\n"
 	}
