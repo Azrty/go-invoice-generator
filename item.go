@@ -162,7 +162,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 	doc.pdf.CellFormat(
 		ItemColQuantityOffset-ItemColUnitPriceOffset,
 		colHeight,
-		doc.encodeString(doc.ac.FormatMoneyDecimal(i._unitCost)),
+		doc.encodeString(doc.Options.CurrencySymbol + i._unitCost.Round(5).String()),
 		"0",
 		0,
 		"",
