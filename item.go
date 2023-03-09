@@ -306,7 +306,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		// If tax
 		var taxTitle string
 		var taxDesc string
-		var dAmount decimal.Decimal
+		var taxTotal decimal.Decimal = decimal.NewFromFloat(0)
 		for _, v := range i.Taxes {
 			taxType, taxAmount := v.getTax()
 
@@ -315,15 +315,15 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 				// get amount from percent
 				dCost := i.TotalWithoutTaxAndWithDiscount()
 				dAmount := dCost.Mul(taxAmount.Div(decimal.NewFromFloat(100)))
-				taxDesc = doc.ac.FormatMoneyDecimal(dAmount)
+				taxTotal.Add(dAmount)
 			} else {
 				taxTitle = fmt.Sprintf("%s %s", doc.ac.Symbol, taxAmount)
 				dCost := i.TotalWithoutTaxAndWithDiscount()
 				dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
-				dAmount = dAmount.Div(dCost)
+				taxTotal.Add(dAmount.Div(dCost))
 				// get percent from amount
 			}
-			taxDesc = doc.ac.FormatMoneyDecimal(dAmount)
+			taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
 		}
 
 		// tax title
