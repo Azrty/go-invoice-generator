@@ -305,7 +305,6 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 	} else {
 		// If tax
 		var taxTitle string
-		var taxDesc string
 		var taxTotal decimal.Decimal = decimal.NewFromFloat(0)
 		for _, v := range i.Taxes {
 			taxType, taxAmount := v.getTax()
@@ -323,7 +322,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 				taxTotal = taxTotal.Add(dAmount.Div(dCost))
 				// get percent from amount
 			}
-			taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
+			taxTitle = doc.ac.FormatMoneyDecimal(taxTotal)
 		}
 
 		// tax title
@@ -349,7 +348,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 			doc.Options.GreyTextColor[2],
 		)
 
-		doc.pdf.CellFormat(
+		/*doc.pdf.CellFormat(
 			ItemColDiscountOffset-ItemColTaxOffset,
 			colHeight/2,
 			doc.encodeString(taxDesc),
@@ -359,7 +358,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 			false,
 			0,
 			"",
-		)
+		)*/
 
 		// reset font and y
 		doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
