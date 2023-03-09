@@ -438,7 +438,7 @@ func (doc *Document) appendTotal() {
 		doc.pdf.CellFormat(
 			40,
 			10,
-			doc.encodeString(tax._total.String()),
+			doc.encodeString(tax._total.String()+" "+tax.Name),
 			"0",
 			0,
 			"L",
@@ -448,7 +448,7 @@ func (doc *Document) appendTotal() {
 		)
 	}
 
-	// Draw tax title
+	/*// Draw tax title
 	doc.pdf.SetX(120)
 	doc.pdf.SetFillColor(doc.Options.DarkBgColor[0], doc.Options.DarkBgColor[1], doc.Options.DarkBgColor[2])
 	doc.pdf.Rect(120, doc.pdf.GetY(), 40, 10, "F")
@@ -468,7 +468,7 @@ func (doc *Document) appendTotal() {
 		false,
 		0,
 		"",
-	)
+	)*/
 
 	// Draw total with tax title
 	doc.pdf.SetY(doc.pdf.GetY() + 10)
