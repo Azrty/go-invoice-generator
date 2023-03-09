@@ -322,7 +322,8 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 				taxTotalAmount = taxTotalAmount.Add(taxAmount)
 				//dCost := i.TotalWithoutTaxAndWithDiscount()
 				//dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
-				taxTotal = taxTotal.Add(taxTotalAmount)
+				var dAmount decimal.Decimal = i._quantity.Mul(taxAmount)
+				taxTotal = taxTotal.Add(dAmount)
 				// get percent from amount
 				println("taxTotalAmount", taxTotalAmount.String())
 			}
