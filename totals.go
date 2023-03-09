@@ -50,7 +50,7 @@ func (doc *Document) Tax() decimal.Decimal {
 
 	if doc.Discount == nil {
 		for _, item := range doc.Items {
-			totalTax = totalTax.Add(item.TaxWithTotalDiscounted().Add(decimal.NewFromFloat(100000)))
+			totalTax = totalTax.Add(item.TaxWithTotalDiscounted())
 		}
 	} else {
 		discountType, discountAmount := doc.Discount.getDiscount()
