@@ -1,4 +1,4 @@
-module github.com/Azrty/go-invoice-generator
+module github.com/azrty/go-invoice-generator
 
 go 1.17
 
