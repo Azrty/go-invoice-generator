@@ -5,6 +5,7 @@ import (
 
 	"github.com/shopspring/decimal"
 )
+type Taxes struct 
 
 // Item represent a 'product' or a 'service'
 type Item struct {
@@ -12,7 +13,8 @@ type Item struct {
 	Description string    `json:"description,omitempty"`
 	UnitCost    string    `json:"unit_cost,omitempty"`
 	Quantity    string    `json:"quantity,omitempty"`
-	Tax         *Tax      `json:"tax,omitempty"`
+	Taxes         []Tax      `json:"taxes,omitempty"`
+	
 	Discount    *Discount `json:"discount,omitempty"`
 
 	_unitCost decimal.Decimal
