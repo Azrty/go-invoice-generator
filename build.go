@@ -413,6 +413,7 @@ func (doc *Document) appendTotal() {
 	var Taxes []Tax
 	for _, item := range doc.Items {
 		for _, tax := range item.Taxes {
+			tax._total = tax._total.Add(item.TaxWithTotalDiscounted())
 			Taxes = append(Taxes, tax)
 		}
 
@@ -424,11 +425,28 @@ func (doc *Document) appendTotal() {
 	}
 
 	for _, tax := range UniqueTaxes {
-		Taxes = []Tax{}
-		Taxes = append(Taxes, tax)
-	}
+		// Draw tax title
+		doc.pdf.SetX(120)
+		doc.pdf.SetFillColor(doc.Options.DarkBgColor[0], doc.Options.DarkBgColor[1], doc.Options.DarkBgColor[2])
+		doc.pdf.Rect(120, doc.pdf.GetY(), 40, 10, "F")
+		doc.pdf.CellFormat(38, 10, doc.encodeString(tax.Name), "0", 0, "R", false, 0, "")
 
-	fmt.Println(Taxes)
+		// Draw tax amount
+		doc.pdf.SetX(162)
+		doc.pdf.SetFillColor(doc.Options.GreyBgColor[0], doc.Options.GreyBgColor[1], doc.Options.GreyBgColor[2])
+		doc.pdf.Rect(160, doc.pdf.GetY(), 40, 10, "F")
+		doc.pdf.CellFormat(
+			40,
+			10,
+			doc.encodeString(tax._total.String()),
+			"0",
+			0,
+			"L",
+			false,
+			0,
+			"",
+		)
+	}
 
 	// Draw tax title
 	doc.pdf.SetX(120)

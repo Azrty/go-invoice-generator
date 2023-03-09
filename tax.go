@@ -22,6 +22,7 @@ type Tax struct {
 	AmountForEach bool   `json:"amountForEach,omitempty"` // True or false
 	Name          string `json:"name,omitempty"`          // Tax name ex VAT
 
+	_total   decimal.Decimal
 	_percent decimal.Decimal
 	_amount  decimal.Decimal
 }
