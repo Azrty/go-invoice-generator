@@ -101,10 +101,14 @@ func (i *Item) TaxWithTotalDiscounted() decimal.Decimal {
 
 	totalHT := i.TotalWithoutTaxAndWithDiscount()
 	for _, v := range i.Taxes {
-		taxType, taxAmount := v.getTax()
+		taxType, taxAmount, taxAmountForEach := v.getTax()
 
 		if taxType == TaxTypeAmount {
-			result = result.Add(taxAmount)
+			if taxAmountForEach {
+				result = result.Add(taxAmount.Mul(i._quantity))
+			} else {
+				result = result.Add(taxAmount)
+			}
 		} else {
 			divider := decimal.NewFromFloat(100)
 			result = result.Add(totalHT.Mul(taxAmount.Div(divider)))
@@ -310,7 +314,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		var taxTotalPercent decimal.Decimal = decimal.NewFromFloat(0)
 		var taxTotalAmount decimal.Decimal = decimal.NewFromFloat(0)
 		for _, v := range i.Taxes {
-			taxType, taxAmount := v.getTax()
+			taxType, taxAmount, taxAmountForEach := v.getTax()
 
 			if taxType == TaxTypePercent {
 				taxTotalPercent = taxTotalPercent.Add(taxAmount)
@@ -322,8 +326,12 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 				taxTotalAmount = taxTotalAmount.Add(taxAmount)
 				//dCost := i.TotalWithoutTaxAndWithDiscount()
 				//dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
-				var dAmount decimal.Decimal = i._quantity.Mul(taxAmount)
-				taxTotal = taxTotal.Add(dAmount)
+				if taxAmountForEach {
+					taxTotal = taxTotal.Add(taxAmount.Mul(i._quantity))
+				} else {
+					taxTotal = taxTotal.Add(taxAmount)
+				}
+				taxTotal = taxTotal.Add(taxAmount.Mul(i._quantity))
 				// get percent from amount
 				println("taxTotalAmount", taxTotalAmount.String())
 			}
