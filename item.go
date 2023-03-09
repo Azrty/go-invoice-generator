@@ -56,7 +56,7 @@ func (i *Item) Prepare() error {
 func (i *Item) TotalWithoutTaxAndWithoutDiscount() decimal.Decimal {
 	quantity, _ := decimal.NewFromString(i.Quantity)
 	price, _ := decimal.NewFromString(i.UnitCost)
-	total := price.Mul(quantity)
+	total := price.Mul(quantity).Round(2)
 
 	return total
 }
