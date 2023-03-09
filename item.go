@@ -333,7 +333,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 			doc.encodeString(taxTitle),
 			"0",
 			0,
-			"LB",
+			"",
 			false,
 			0,
 			"",
@@ -361,13 +361,13 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		)*/
 
 		// reset font and y
-		doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
+		/*doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
 		doc.pdf.SetTextColor(
 			doc.Options.BaseTextColor[0],
 			doc.Options.BaseTextColor[1],
 			doc.Options.BaseTextColor[2],
 		)
-		doc.pdf.SetY(baseY)
+		doc.pdf.SetY(baseY)*/
 	}
 
 	// TOTAL TTC
