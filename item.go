@@ -305,50 +305,68 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 	} else {
 		// If tax
 		var taxTitle string
+		var taxDesc string
 		var taxTotal decimal.Decimal = decimal.NewFromFloat(0)
+		var taxTotalPercent decimal.Decimal = decimal.NewFromFloat(0)
+		var taxTotalAmount decimal.Decimal = decimal.NewFromFloat(0)
 		for _, v := range i.Taxes {
 			taxType, taxAmount := v.getTax()
 
 			if taxType == TaxTypePercent {
-				taxTitle = fmt.Sprintf("%s %s", taxAmount, "%")
+				taxTotalPercent = taxTotalPercent.Add(taxAmount)
 				// get amount from percent
 				dCost := i.TotalWithoutTaxAndWithDiscount()
 				dAmount := dCost.Mul(taxAmount.Div(decimal.NewFromFloat(100)))
 				taxTotal = taxTotal.Add(dAmount)
 			} else {
+				taxTotalAmount = taxTotalAmount.Add(taxAmount)
 				taxTitle = fmt.Sprintf("%s %s", doc.ac.Symbol, taxAmount)
 				dCost := i.TotalWithoutTaxAndWithDiscount()
 				dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
 				taxTotal = taxTotal.Add(dAmount.Div(dCost))
 				// get percent from amount
 			}
-			taxTitle = doc.ac.FormatMoneyDecimal(taxTotal)
+			taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
 		}
+		if taxTotalPercent.IsPositive() && taxTotalAmount.IsPositive() {
+			taxTitle = fmt.Sprintf("%s %s + %s %s", taxTotalPercent, "%", taxTotalAmount, doc.ac.Symbol)
+			taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
+		}
+		if taxTotalPercent.IsPositive() && !taxTotalAmount.IsPositive() {
+			taxTitle = fmt.Sprintf("%s %s", taxTotalPercent, "%")
+			taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
+		}
+		if taxTotalPercent.IsZero() && taxTotalAmount.IsPositive() {
+			taxTitle = fmt.Sprintf("%s %s", taxTotalAmount, doc.ac.Symbol)
+			taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
+		}
+
+		taxDesc = doc.ac.FormatMoneyDecimal(taxTotal)
 
 		// tax title
 		// lastY := doc.pdf.GetY()
 		doc.pdf.CellFormat(
 			ItemColDiscountOffset-ItemColTaxOffset,
-			colHeight,
+			colHeight/2,
 			doc.encodeString(taxTitle),
 			"0",
 			0,
-			"",
+			"LB",
 			false,
 			0,
 			"",
 		)
 
 		// tax desc
-		/*doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
+		doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
 		doc.pdf.SetFont(doc.Options.Font, "", SmallTextFontSize)
 		doc.pdf.SetTextColor(
 			doc.Options.GreyTextColor[0],
 			doc.Options.GreyTextColor[1],
 			doc.Options.GreyTextColor[2],
-		)*/
+		)
 
-		/*doc.pdf.CellFormat(
+		doc.pdf.CellFormat(
 			ItemColDiscountOffset-ItemColTaxOffset,
 			colHeight/2,
 			doc.encodeString(taxDesc),
@@ -358,16 +376,16 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 			false,
 			0,
 			"",
-		)*/
+		)
 
 		// reset font and y
-		/*doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
+		doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
 		doc.pdf.SetTextColor(
 			doc.Options.BaseTextColor[0],
 			doc.Options.BaseTextColor[1],
 			doc.Options.BaseTextColor[2],
 		)
-		doc.pdf.SetY(baseY)*/
+		doc.pdf.SetY(baseY)
 	}
 
 	// TOTAL TTC
