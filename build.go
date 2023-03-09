@@ -422,7 +422,13 @@ func (doc *Document) appendTotal() {
 	for _, tax := range Taxes {
 		UniqueTaxes[tax.Name] = tax
 	}
-	fmt.Println(UniqueTaxes)
+
+	for _, tax := range UniqueTaxes {
+		Taxes = []Tax{}
+		Taxes = append(Taxes, tax)
+	}
+
+	fmt.Println(Taxes)
 
 	// Draw tax title
 	doc.pdf.SetX(120)
