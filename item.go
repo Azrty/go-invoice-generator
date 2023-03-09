@@ -340,13 +340,13 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		)
 
 		// tax desc
-		doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
+		/*doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
 		doc.pdf.SetFont(doc.Options.Font, "", SmallTextFontSize)
 		doc.pdf.SetTextColor(
 			doc.Options.GreyTextColor[0],
 			doc.Options.GreyTextColor[1],
 			doc.Options.GreyTextColor[2],
-		)
+		)*/
 
 		/*doc.pdf.CellFormat(
 			ItemColDiscountOffset-ItemColTaxOffset,
