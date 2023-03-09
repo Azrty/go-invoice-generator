@@ -61,21 +61,23 @@ func (doc *Document) Tax() decimal.Decimal {
 		}
 
 		for _, item := range doc.Items {
-			if item.Tax != nil {
-				taxType, taxAmount := item.Tax.getTax()
-				if taxType == TaxTypeAmount {
-					// If tax type is amount, just add amount to tax
-					totalTax = totalTax.Add(taxAmount)
-				} else {
-					// Else, remove doc discount % from item total without tax and item discount
-					itemTotal := item.TotalWithoutTaxAndWithDiscount()
-					toSub := discountPercent.Mul(itemTotal).Div(decimal.NewFromFloat(100))
-					itemTotalDiscounted := itemTotal.Sub(toSub)
+			if item.Taxes != nil {
+				for _, tax := range item.Taxes {
+					taxType, taxAmount := tax.getTax()
+					if taxType == TaxTypeAmount {
+						// If tax type is amount, just add amount to tax
+						totalTax = totalTax.Add(taxAmount)
+					} else {
+						// Else, remove doc discount % from item total without tax and item discount
+						itemTotal := item.TotalWithoutTaxAndWithDiscount()
+						toSub := discountPercent.Mul(itemTotal).Div(decimal.NewFromFloat(100))
+						itemTotalDiscounted := itemTotal.Sub(toSub)
 
-					// Then recompute tax on itemTotalDiscounted
-					itemTaxDiscounted := taxAmount.Mul(itemTotalDiscounted).Div(decimal.NewFromFloat(100))
+						// Then recompute tax on itemTotalDiscounted
+						itemTaxDiscounted := taxAmount.Mul(itemTotalDiscounted).Div(decimal.NewFromFloat(100))
 
-					totalTax = totalTax.Add(itemTaxDiscounted)
+						totalTax = totalTax.Add(itemTaxDiscounted)
+					}
 				}
 			}
 		}

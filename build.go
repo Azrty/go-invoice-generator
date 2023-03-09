@@ -270,8 +270,8 @@ func (doc *Document) appendItems() {
 		item := doc.Items[i]
 
 		// Check item tax
-		if item.Tax == nil {
-			item.Tax = doc.DefaultTax
+		if item.Taxes == nil {
+			item.Taxes = []Tax{*doc.DefaultTax}
 		}
 
 		// Append to pdf

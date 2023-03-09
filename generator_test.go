@@ -86,9 +86,7 @@ func TestNew(t *testing.T) {
 			Description: "Cupcake ipsum dolor sit amet bonbon, Cupcake ipsum dolor sit amet bonbon, Cupcake ipsum dolor sit amet bonbon",
 			UnitCost:    "99876.89",
 			Quantity:    "2",
-			Tax: &Tax{
-				Percent: "20",
-			},
+			Taxes:       []Tax{{Percent: "20"}, {Percent: "10"}},
 		})
 	}
 
@@ -96,9 +94,7 @@ func TestNew(t *testing.T) {
 		Name:     "Test",
 		UnitCost: "99876.89",
 		Quantity: "2",
-		Tax: &Tax{
-			Amount: "89",
-		},
+		Taxes:    []Tax{{Amount: "220"}, {Amount: "160"}},
 		Discount: &Discount{
 			Percent: "30",
 		},
