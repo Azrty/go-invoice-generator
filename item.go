@@ -2,20 +2,21 @@ package generator
 
 import (
 	"fmt"
-
+	_ "fmt"
 	"github.com/shopspring/decimal"
+
+	_ "github.com/shopspring/decimal"
 )
-type Taxes struct 
 
 // Item represent a 'product' or a 'service'
 type Item struct {
-	Name        string    `json:"name,omitempty" validate:"required"`
-	Description string    `json:"description,omitempty"`
-	UnitCost    string    `json:"unit_cost,omitempty"`
-	Quantity    string    `json:"quantity,omitempty"`
-	Taxes         []Tax      `json:"taxes,omitempty"`
-	
-	Discount    *Discount `json:"discount,omitempty"`
+	Name        string `json:"name,omitempty" validate:"required"`
+	Description string `json:"description,omitempty"`
+	UnitCost    string `json:"unit_cost,omitempty"`
+	Quantity    string `json:"quantity,omitempty"`
+	Taxes       []Tax  `json:"taxes,omitempty"`
+
+	Discount *Discount `json:"discount,omitempty"`
 
 	_unitCost decimal.Decimal
 	_quantity decimal.Decimal
@@ -38,9 +39,11 @@ func (i *Item) Prepare() error {
 	i._quantity = quantity
 
 	// Tax
-	if i.Tax != nil {
-		if err := i.Tax.Prepare(); err != nil {
-			return err
+	if i.Taxes != nil {
+		for _, v := range i.Taxes {
+			if err := v.Prepare(); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -92,18 +95,20 @@ func (i *Item) TotalWithTaxAndDiscount() decimal.Decimal {
 func (i *Item) TaxWithTotalDiscounted() decimal.Decimal {
 	result := decimal.NewFromFloat(0)
 
-	if i.Tax == nil {
+	if i.Taxes == nil {
 		return result
 	}
 
 	totalHT := i.TotalWithoutTaxAndWithDiscount()
-	taxType, taxAmount := i.Tax.getTax()
+	for _, v := range i.Taxes {
+		taxType, taxAmount := v.getTax()
 
-	if taxType == TaxTypeAmount {
-		result = taxAmount
-	} else {
-		divider := decimal.NewFromFloat(100)
-		result = totalHT.Mul(taxAmount.Div(divider))
+		if taxType == TaxTypeAmount {
+			result = taxAmount
+		} else {
+			divider := decimal.NewFromFloat(100)
+			result.Add(totalHT.Mul(taxAmount.Div(divider)))
+		}
 	}
 
 	return result
@@ -164,7 +169,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 	doc.pdf.CellFormat(
 		ItemColQuantityOffset-ItemColUnitPriceOffset,
 		colHeight,
-		doc.encodeString(doc.Options.CurrencySymbol + i._unitCost.Round(5).String()),
+		doc.encodeString(doc.Options.CurrencySymbol+i._unitCost.Round(5).String()),
 		"0",
 		0,
 		"",
@@ -284,7 +289,7 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 
 	// Tax
 	doc.pdf.SetX(ItemColTaxOffset)
-	if i.Tax == nil {
+	if i.Taxes == nil {
 		// If no tax
 		doc.pdf.CellFormat(
 			ItemColDiscountOffset-ItemColTaxOffset,
@@ -299,68 +304,70 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		)
 	} else {
 		// If tax
-		taxType, taxAmount := i.Tax.getTax()
-		var taxTitle string
-		var taxDesc string
+		for _, v := range i.Taxes {
+			taxType, taxAmount := v.getTax()
+			var taxTitle string
+			var taxDesc string
 
-		if taxType == TaxTypePercent {
-			taxTitle = fmt.Sprintf("%s %s", taxAmount, "%")
-			// get amount from percent
-			dCost := i.TotalWithoutTaxAndWithDiscount()
-			dAmount := dCost.Mul(taxAmount.Div(decimal.NewFromFloat(100)))
-			taxDesc = doc.ac.FormatMoneyDecimal(dAmount)
-		} else {
-			taxTitle = fmt.Sprintf("%s %s", doc.ac.Symbol, taxAmount)
-			dCost := i.TotalWithoutTaxAndWithDiscount()
-			dPerc := taxAmount.Mul(decimal.NewFromFloat(100))
-			dPerc = dPerc.Div(dCost)
-			// get percent from amount
-			taxDesc = fmt.Sprintf("%s %%", dPerc.StringFixed(2))
+			if taxType == TaxTypePercent {
+				taxTitle = fmt.Sprintf("%s %s", taxAmount, "%")
+				// get amount from percent
+				dCost := i.TotalWithoutTaxAndWithDiscount()
+				dAmount := dCost.Mul(taxAmount.Div(decimal.NewFromFloat(100)))
+				taxDesc = doc.ac.FormatMoneyDecimal(dAmount)
+			} else {
+				taxTitle = fmt.Sprintf("%s %s", doc.ac.Symbol, taxAmount)
+				dCost := i.TotalWithoutTaxAndWithDiscount()
+				dPerc := taxAmount.Mul(decimal.NewFromFloat(100))
+				dPerc = dPerc.Div(dCost)
+				// get percent from amount
+				taxDesc = fmt.Sprintf("%s %%", dPerc.StringFixed(2))
+			}
+
+			// tax title
+			// lastY := doc.pdf.GetY()
+			doc.pdf.CellFormat(
+				ItemColDiscountOffset-ItemColTaxOffset,
+				colHeight/2,
+				doc.encodeString(taxTitle),
+				"0",
+				0,
+				"LB",
+				false,
+				0,
+				"",
+			)
+
+			// tax desc
+			doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
+			doc.pdf.SetFont(doc.Options.Font, "", SmallTextFontSize)
+			doc.pdf.SetTextColor(
+				doc.Options.GreyTextColor[0],
+				doc.Options.GreyTextColor[1],
+				doc.Options.GreyTextColor[2],
+			)
+
+			doc.pdf.CellFormat(
+				ItemColDiscountOffset-ItemColTaxOffset,
+				colHeight/2,
+				doc.encodeString(taxDesc),
+				"0",
+				0,
+				"LT",
+				false,
+				0,
+				"",
+			)
+
+			// reset font and y
+			doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
+			doc.pdf.SetTextColor(
+				doc.Options.BaseTextColor[0],
+				doc.Options.BaseTextColor[1],
+				doc.Options.BaseTextColor[2],
+			)
+			doc.pdf.SetY(baseY)
 		}
-
-		// tax title
-		// lastY := doc.pdf.GetY()
-		doc.pdf.CellFormat(
-			ItemColDiscountOffset-ItemColTaxOffset,
-			colHeight/2,
-			doc.encodeString(taxTitle),
-			"0",
-			0,
-			"LB",
-			false,
-			0,
-			"",
-		)
-
-		// tax desc
-		doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
-		doc.pdf.SetFont(doc.Options.Font, "", SmallTextFontSize)
-		doc.pdf.SetTextColor(
-			doc.Options.GreyTextColor[0],
-			doc.Options.GreyTextColor[1],
-			doc.Options.GreyTextColor[2],
-		)
-
-		doc.pdf.CellFormat(
-			ItemColDiscountOffset-ItemColTaxOffset,
-			colHeight/2,
-			doc.encodeString(taxDesc),
-			"0",
-			0,
-			"LT",
-			false,
-			0,
-			"",
-		)
-
-		// reset font and y
-		doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
-		doc.pdf.SetTextColor(
-			doc.Options.BaseTextColor[0],
-			doc.Options.BaseTextColor[1],
-			doc.Options.BaseTextColor[2],
-		)
-		doc.pdf.SetY(baseY)
 	}
 
 	// TOTAL TTC
