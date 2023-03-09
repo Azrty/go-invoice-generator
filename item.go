@@ -304,10 +304,11 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 		)
 	} else {
 		// If tax
+		var taxTitle string
+		var taxDesc string
+		var dAmount decimal.Decimal
 		for _, v := range i.Taxes {
 			taxType, taxAmount := v.getTax()
-			var taxTitle string
-			var taxDesc string
 
 			if taxType == TaxTypePercent {
 				taxTitle = fmt.Sprintf("%s %s", taxAmount, "%")
@@ -318,56 +319,56 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 			} else {
 				taxTitle = fmt.Sprintf("%s %s", doc.ac.Symbol, taxAmount)
 				dCost := i.TotalWithoutTaxAndWithDiscount()
-				dPerc := taxAmount.Mul(decimal.NewFromFloat(100))
-				dPerc = dPerc.Div(dCost)
+				dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
+				dAmount = dAmount.Div(dCost)
 				// get percent from amount
-				taxDesc = fmt.Sprintf("%s %%", dPerc.StringFixed(2))
 			}
-
-			// tax title
-			// lastY := doc.pdf.GetY()
-			doc.pdf.CellFormat(
-				ItemColDiscountOffset-ItemColTaxOffset,
-				colHeight/2,
-				doc.encodeString(taxTitle),
-				"0",
-				0,
-				"LB",
-				false,
-				0,
-				"",
-			)
-
-			// tax desc
-			doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
-			doc.pdf.SetFont(doc.Options.Font, "", SmallTextFontSize)
-			doc.pdf.SetTextColor(
-				doc.Options.GreyTextColor[0],
-				doc.Options.GreyTextColor[1],
-				doc.Options.GreyTextColor[2],
-			)
-
-			doc.pdf.CellFormat(
-				ItemColDiscountOffset-ItemColTaxOffset,
-				colHeight/2,
-				doc.encodeString(taxDesc),
-				"0",
-				0,
-				"LT",
-				false,
-				0,
-				"",
-			)
-
-			// reset font and y
-			doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
-			doc.pdf.SetTextColor(
-				doc.Options.BaseTextColor[0],
-				doc.Options.BaseTextColor[1],
-				doc.Options.BaseTextColor[2],
-			)
-			doc.pdf.SetY(baseY)
+			taxDesc = doc.ac.FormatMoneyDecimal(dAmount)
 		}
+
+		// tax title
+		// lastY := doc.pdf.GetY()
+		doc.pdf.CellFormat(
+			ItemColDiscountOffset-ItemColTaxOffset,
+			colHeight/2,
+			doc.encodeString(taxTitle),
+			"0",
+			0,
+			"LB",
+			false,
+			0,
+			"",
+		)
+
+		// tax desc
+		doc.pdf.SetXY(ItemColTaxOffset, baseY+(colHeight/2))
+		doc.pdf.SetFont(doc.Options.Font, "", SmallTextFontSize)
+		doc.pdf.SetTextColor(
+			doc.Options.GreyTextColor[0],
+			doc.Options.GreyTextColor[1],
+			doc.Options.GreyTextColor[2],
+		)
+
+		doc.pdf.CellFormat(
+			ItemColDiscountOffset-ItemColTaxOffset,
+			colHeight/2,
+			doc.encodeString(taxDesc),
+			"0",
+			0,
+			"LT",
+			false,
+			0,
+			"",
+		)
+
+		// reset font and y
+		doc.pdf.SetFont(doc.Options.Font, "", BaseTextFontSize)
+		doc.pdf.SetTextColor(
+			doc.Options.BaseTextColor[0],
+			doc.Options.BaseTextColor[1],
+			doc.Options.BaseTextColor[2],
+		)
+		doc.pdf.SetY(baseY)
 	}
 
 	// TOTAL TTC
