@@ -27,7 +27,7 @@ func (a *Address) ToString() string {
 	}
 	if len(a.State) > 0 {
 		addrString += ", "
-		addrString += a.State + "\n"
+		addrString += a.State
 	}
 
 	if len(a.PostalCode) > 0 {
