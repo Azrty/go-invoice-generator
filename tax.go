@@ -20,6 +20,7 @@ type Tax struct {
 	Percent       string `json:"percent,omitempty"`       // Tax in percent ex 17
 	Amount        string `json:"amount,omitempty"`        // Tax in amount ex 123.40
 	AmountForEach bool   `json:"amountForEach,omitempty"` // True or false
+	Name          string `json:"name,omitempty"`          // Tax name ex VAT
 
 	_percent decimal.Decimal
 	_amount  decimal.Decimal
@@ -53,7 +54,7 @@ func (t *Tax) Prepare() error {
 }
 
 // getTax return the tax type and value
-func (t *Tax) getTax() (string, decimal.Decimal, bool) {
+func (t *Tax) getTax() (string, decimal.Decimal, bool, string) {
 	tax := "0"
 	taxType := TaxTypePercent
 
@@ -68,5 +69,5 @@ func (t *Tax) getTax() (string, decimal.Decimal, bool) {
 
 	decVal, _ := decimal.NewFromString(tax)
 
-	return taxType, decVal, t.AmountForEach
+	return taxType, decVal, t.AmountForEach, t.Name
 }

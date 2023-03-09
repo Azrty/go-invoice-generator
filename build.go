@@ -410,6 +410,19 @@ func (doc *Document) appendTotal() {
 	} else {
 		doc.pdf.SetY(doc.pdf.GetY() + 10)
 	}
+	var Taxes []Tax
+	for _, item := range doc.Items {
+		for _, tax := range item.Taxes {
+			Taxes = append(Taxes, tax)
+		}
+
+	}
+	// remove duplicate taxes in Taxes
+	UniqueTaxes := make(map[string]Tax)
+	for _, tax := range Taxes {
+		UniqueTaxes[tax.Name] = tax
+	}
+	fmt.Println(UniqueTaxes)
 
 	// Draw tax title
 	doc.pdf.SetX(120)
