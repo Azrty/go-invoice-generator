@@ -320,10 +320,9 @@ func (i *Item) appendColTo(options *Options, doc *Document) {
 				taxTotal = taxTotal.Add(dAmount)
 			} else {
 				taxTotalAmount = taxTotalAmount.Add(taxAmount)
-				taxTitle = fmt.Sprintf("%s %s", doc.ac.Symbol, taxAmount)
-				dCost := i.TotalWithoutTaxAndWithDiscount()
-				dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
-				taxTotal = taxTotal.Add(dAmount.Div(dCost))
+				//dCost := i.TotalWithoutTaxAndWithDiscount()
+				//dAmount := taxAmount.Mul(decimal.NewFromFloat(100))
+				taxTotal = taxTotal.Add(taxTotalAmount)
 				// get percent from amount
 				println("taxTotalAmount", taxTotalAmount.String())
 			}
