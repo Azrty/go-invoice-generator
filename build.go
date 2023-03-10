@@ -438,7 +438,7 @@ func (doc *Document) appendTotal() {
 		doc.pdf.CellFormat(
 			40,
 			10,
-			doc.encodeString(doc.Options.CurrencySymbol+" "+tax._total.String()),
+			doc.encodeString(doc.Options.CurrencySymbol+tax._total.String()),
 			"0",
 			0,
 			"L",
