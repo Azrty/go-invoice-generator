@@ -423,7 +423,7 @@ func (doc *Document) appendTotal() {
 	for _, tax := range Taxes {
 		UniqueTaxes[tax.Name] = tax
 	}
-	var taxX float64 = 162
+	var taxX float64 = 200
 	for _, tax := range UniqueTaxes {
 		// Draw tax title
 		doc.pdf.SetX(120)
