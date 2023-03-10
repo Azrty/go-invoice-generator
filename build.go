@@ -422,8 +422,8 @@ func (doc *Document) appendTotal() {
 				}
 			} else {
 				tax._total = item.TotalWithoutTaxAndWithoutDiscount().Mul(tax._percent)
-				Taxes = append(Taxes, tax)
 			}
+			Taxes = append(Taxes, tax)
 		}
 
 	}
