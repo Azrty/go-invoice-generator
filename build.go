@@ -413,8 +413,17 @@ func (doc *Document) appendTotal() {
 	var Taxes []Tax
 	for _, item := range doc.Items {
 		for _, tax := range item.Taxes {
-
-			tax._total = item.TotalWithoutTaxAndWithoutDiscount().Mul(tax._percent)
+			taxType, taxAmount, taxAmountForEach, _ := tax.getTax()
+			if taxType == TaxTypeAmount {
+				if taxAmountForEach {
+					tax._total = taxAmount.Mul(item._quantity)
+				} else {
+					tax._total = tax._total.Add(taxAmount)
+				}
+			} else {
+				tax._total = item.TotalWithoutTaxAndWithoutDiscount().Mul(tax._percent)
+				fmt.Println(item.TotalWithoutTaxAndWithoutDiscount())
+			}
 			Taxes = append(Taxes, tax)
 		}
 
