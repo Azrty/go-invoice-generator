@@ -433,7 +433,14 @@ func (doc *Document) appendTotal() {
 	// remove duplicate taxes in Taxes
 	UniqueTaxes := make(map[string]Tax)
 	for _, tax := range Taxes {
-		UniqueTaxes[tax.Name] = tax
+		//check if tax is already in map
+		if _, ok := UniqueTaxes[tax.Name]; !ok {
+			UniqueTaxes[tax.Name] = tax
+		} else {
+			var _tax = UniqueTaxes[tax.Name]
+			_tax._total = UniqueTaxes[tax.Name]._total.Add(tax._total)
+			UniqueTaxes[tax.Name] = _tax
+		}
 	}
 	var taxY float64 = 15
 	for _, tax := range UniqueTaxes {
