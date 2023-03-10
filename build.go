@@ -423,10 +423,10 @@ func (doc *Document) appendTotal() {
 	for _, tax := range Taxes {
 		UniqueTaxes[tax.Name] = tax
 	}
-	//var taxX float64 = 162
+	var taxY float64 = 15
 	for _, tax := range UniqueTaxes {
 		// Draw tax title
-		doc.pdf.SetY(doc.pdf.GetY() + 15)
+		doc.pdf.SetY(doc.pdf.GetY() + taxY)
 		doc.pdf.SetX(120)
 		doc.pdf.SetFillColor(doc.Options.DarkBgColor[0], doc.Options.DarkBgColor[1], doc.Options.DarkBgColor[2])
 		doc.pdf.Rect(120, doc.pdf.GetY(), 40, 10, "F")
@@ -447,7 +447,7 @@ func (doc *Document) appendTotal() {
 			0,
 			"",
 		)
-		//taxY = taxY + 40
+		taxY = taxY + 5
 	}
 
 	/*// Draw tax title
