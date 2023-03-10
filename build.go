@@ -421,8 +421,10 @@ func (doc *Document) appendTotal() {
 					tax._total = tax._total.Add(taxAmount)
 				}
 			} else {
-				tax._total = item.TotalWithoutTaxAndWithoutDiscount().Mul(tax._percent)
-				fmt.Println("Totaltest:", item.TotalWithoutTaxAndWithoutDiscount())
+				divider := decimal.NewFromFloat(100)
+				tax._total = tax._total.Add(item.TotalWithoutTaxAndWithDiscount().Mul(taxAmount.Div(divider)))
+				//tax._total = item.TotalWithoutTaxAndWithoutDiscount().Mul(tax._percent)
+				//fmt.Println("Totaltest:", item.TotalWithoutTaxAndWithoutDiscount())
 			}
 			Taxes = append(Taxes, tax)
 		}
