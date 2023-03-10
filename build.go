@@ -416,9 +416,9 @@ func (doc *Document) appendTotal() {
 			taxType, taxAmount, taxAmountForEach, _ := tax.getTax()
 			if taxType == TaxTypeAmount {
 				if taxAmountForEach {
-					tax._total = taxAmount.Mul(item._quantity)
+					tax._total = decimal.NewFromInt(10).Mul(item._quantity)
 				} else {
-					tax._total = taxAmount
+					tax._total = tax._total.Add(taxAmount)
 				}
 			} else {
 				tax._total = item.TotalWithoutTaxAndWithoutDiscount().Mul(tax._percent)
